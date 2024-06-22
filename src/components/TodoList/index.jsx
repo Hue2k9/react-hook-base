@@ -1,35 +1,40 @@
-// rfce
-import React from "react";
-import PropTypes from "prop-types";
+import { useState } from "react";
+import TodoAction from "./todo-action";
+import TodoForm from "./todo-form";
 
-TodoList.propTypes = {
-  todos: PropTypes.array,
-  onTodoClick: PropTypes.func,
-};
+export default function TodoList() {
+  const [todoList, setTodoList] = useState([
+    { id: 1, title: "one" },
+    { id: 2, title: "two" },
+    { id: 3, title: "three" },
+  ]);
 
-TodoList.defaultProps = {
-  todos: [],
-  onTodoClick: null,
-};
+  function handleTodoClick(todo) {
+    const index = todoList.findIndex((item) => item.id === todo.id);
+    if (index < 0) return;
+    const newTodoList = [...todoList];
 
-function TodoList(props) {
-  const { todos, onTodoClick } = props;
+    newTodoList.splice(index, 1);
 
-  function handleClick(todo) {
-    if (onTodoClick) {
-      onTodoClick(todo);
-    }
+    setTodoList([...newTodoList]);
+  }
+
+  function handleTodoFormSubmit(formValues) {
+    const newTodo = {
+      id: Math.floor(Math.random() * 1000),
+      ...formValues,
+    };
+
+    const newTodoList = [...todoList];
+    newTodoList.push(newTodo);
+    setTodoList([...newTodoList]);
   }
 
   return (
-    <ul className="todo-list">
-      {todos.map((todo) => (
-        <li key={todo.id} onClick={() => handleClick(todo)}>
-          {todo.title}{" "}
-        </li>
-      ))}
-    </ul>
+    <div className="app">
+      <h1>React hooks - Todo list</h1>
+      <TodoForm onSubmit={handleTodoFormSubmit} />
+      <TodoAction todos={todoList} onTodoClick={handleTodoClick} />
+    </div>
   );
 }
-
-export default TodoList;
